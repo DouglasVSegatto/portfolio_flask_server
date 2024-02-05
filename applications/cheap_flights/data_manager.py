@@ -1,36 +1,8 @@
-from typing import List, Dict, Any
-
-import requests, os
 from datetime import datetime
-
-GET_ENDPOINT = "https://api.sheety.co/0de94f8166f9052f099863d69826b7ba/segattoFlightDeals/prices"
-POST_ENDPOINT = "https://api.sheety.co/0de94f8166f9052f099863d69826b7ba/segattoFlightDeals/prices"
-AUTH_BEARER = os.environ.get("PYTHON_GSHEET_AUTH")
-
-authentication_headers = {
-    "Authorization": (f"Bearer {AUTH_BEARER}"),
-    "Content-Type": "application/json"
-}
-
 
 class DataManager:
     """ Class responsible for accessing Google Sheet database """
 
-    def update_flight_lowest_price(self, id, lowest_price):
-        """
-         Updates the lowest price found to the database,
-         I'm not using that yet, but would be interesting for later
-         """
-
-        PUT_ENDPOINT = f"https://api.sheety.co/0de94f8166f9052f099863d69826b7ba/segattoFlightDeals/prices/{id}"
-        body = {
-            "price": {
-                'lowestPrice': lowest_price
-            }
-        }
-        response = requests.put(PUT_ENDPOINT, headers=authentication_headers, json=body)
-        result = response.json()
-        print(result)
 
     def update_airline_name(self, airline_id) -> str:
 
