@@ -34,3 +34,18 @@
     color: white;
     z-index: 2;
 }
+
+.flashes {
+    color: #d55b44;
+    text-align: center;
+}
+
+.flight-form-container {
+    width: 80%;
+    max-width: 200px;
+}
+
+.required-field::after {
+    content: "*";
+    color: red;
+}
