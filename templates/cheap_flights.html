@@ -1,0 +1,26 @@
+{% from "bootstrap5/form.html" import render_form %}
+
+{% include 'nav_bar.html' %}
+
+<div class="container text-center">
+        <h1>Cheap flights track!</h1>
+
+    <div class="container flight-form-container">
+        {{ render_form(form, novalidate=True) }}
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</div>
+
+
+{% include 'footer.html' %}
+
+

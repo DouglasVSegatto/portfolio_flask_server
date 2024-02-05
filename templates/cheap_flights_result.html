@@ -1,0 +1,51 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% include 'nav_bar.html' %}
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+<script>
+    $(document).ready( function () {
+        $('#flightsTable').DataTable();
+    });
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+
+            <h1>All Flights Available</h1>
+
+            <table id="flightsTable" class="table table-light table-striped table-hover">
+            {%  if flights_result %}
+                <thead>
+                <tr>
+                    <th scope="col">Price</th>
+                    <th scope="col">Route</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for data in flights_result %}
+                        <tr>
+                            <td>{{ data["price"] }}</td>
+                            {%  for routes in data["route"] %}
+                            <td>{{ routes }}</td>
+                                {% endfor %}
+                        </tr>
+                        {% endfor %}
+                {%  else %}
+                    <div>
+                        <p> No flights found, please try different days </p>
+                    </div>
+                {% endif %}
+                </tbody>
+            </table>
+            <div class="">
+                <a href="{{ url_for('cheap_flight') }}">Return to cheap flights search</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
