@@ -1,38 +1,8 @@
 
-#profile-picture {
+#profile-picture { /* future */
     width: 150px;
     height: 150px;
     border-radius: 50%;
-}
-
-#main-img {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    object-fit: cover;
-    z-index: 1;
-}
-
-#main-nav {
-    z-index: 2; /* Set a higher z-index for the navigation bar to appear on top */
-}
-
-#image-container {
-    position: relative;
-    width: 100%;
-    height: 100vh; /* Set to 100% of the viewport height */
-}
-
-#centered-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: white;
-    z-index: 2;
 }
 
 .flashes {
@@ -48,4 +18,36 @@
 .required-field::after {
     content: "*";
     color: red;
+}
+
+/*####################*/
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+
+/* ###### MAIN PAGE ############## */
+
+.background-image-hi-container {
+  background-image: url('../images/arthur-salarini-vvATfzXcreI-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.background-image-carrier-container {
+  background-image: url('../images/ramon-bucard-qA3EyF9G2dE-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.background-image-untilhere-container {
+  background-image: url('../images/jonathan-borba-h7l1ChTUOMo-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }

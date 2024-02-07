@@ -1,5 +1,59 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- External Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
-<!-- Footer-->
+    <!-- Local Styles and Bootstrap-Flask -->
+    <meta charset="UTF-8">
+    <!-- Title set to always have "DouglasToPython -" and page title after -->
+    <title>{% block title %}DouglasToPython{% endblock %} - {% block page_title %}{% endblock %}</title>
+
+    {% block styles %}
+    <!-- Bootstrap-Flask CSS -->
+    {{ bootstrap.load_css() }}
+    <link
+      href="{{ url_for('static', filename='css/styles.css') }}"
+      rel="stylesheet"
+    />
+    {% endblock %}
+</head>
+
+<body>
+
+<nav id="main-nav" class="p-3 text-bg-light">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+          <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
+        </a>
+
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+          <li><a href="{{ url_for('home') }}" class="nav-link px-2 text-secondary">Home</a></li>
+          <li><a href="{{ url_for('cheap_flight') }}" class="nav-link px-2 text-black">Cheap Flights</a></li>
+          <li><a href="#" class="nav-link px-2 text-black">Project2</a></li>
+          <li><a href="#" class="nav-link px-2 text-black">Project3</a></li>
+          <li><a href="#" class="nav-link px-2 text-black">About</a></li>
+        </ul>
+        <div class="text-end">
+          <button type="button" class="btn btn-outline-dark me-2">Login</button>
+          <button type="button" class="btn btn-warning">Sign-up</button>
+       </div>
+     </div>
+   </div>
+ </nav>
+
+<!-- For future reference: configured base.html to be extended for other pages.
+Explaination: New html page only requires html code, header and footer will be loaded based on this "base.html"
+              See main.html as example -->
+
+<div id="content" class="container">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- Footer -->
 <div class="container">
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
     <div class="col-md-4 d-flex align-items-center">

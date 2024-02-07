@@ -1,14 +1,36 @@
-{% include 'nav_bar.html' %}
+{% extends 'base.html' %}
 
-<div id="image-container">
-<!--Main img-->
-    <img id="main-img" src="/static/screen_coffe_test.jpg" alt="Main Picture">
-<!--    Centered image and text-->
-        <div id="centered-content">
-<!--            <img id="profile-picture" src="/static/doug_profile.png" alt="Profile Picture">-->
-            <h2>Portfolio in progress</h2>
-            <p>Additional information will be added here.</p>
+{% block page_title %}Home{% endblock %}
+
+
+{% block content %}
+
+    <div class="background-image-hi-container p-5 mb-4 bg-body-tertiary rounded-3">
+      <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Hi!</h1>
+        <p class="col-md-8 fs-4 text">I'm Douglas Segatto.</p>
+      </div>
+    </div>
+
+    <div class="row align-items-md-stretch">
+      <div class="col-md-6">
+        <div class="h-100 p-5 rounded-3 background-image-carrier-container">
+          <h2>Carrier development</h2>
+            <p>I am currently pursuing new opportunities and focusing on becoming a Software Engineer, I'm constantly looking for new challenges.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button class="btn btn-outline-secondary" type="button">Check it out(WIP)</button>
+            </div>
         </div>
-</div>
+      </div>
+      <div class="col-md-6">
+        <div class="h-100 p-5 bg-body-tertiary border rounded-3 background-image-untilhere-container" >
+          <h2>Until here</h2>
+          <p>I wrote a bit about myself, my background and my carrier growth until where i am now.</p>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="btn btn-outline-secondary" type="button">Check it out(WIP)</button>
+        </div>
+      </div>
+    </div>
 
-{% include 'footer.html' %}
+{% endblock %}
+

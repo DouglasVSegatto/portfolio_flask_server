@@ -1,51 +1,58 @@
-{% from "bootstrap5/form.html" import render_form %}
-{% include 'nav_bar.html' %}
 
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+{% extends 'base.html' %}
+{% block page_title %}Cheap Flights Result{% endblock %}
+{% block content %}
 
-<script>
-    $(document).ready( function () {
-        $('#flightsTable').DataTable();
-    });
-</script>
-
-<div class="container">
+<div class="container text-center">
     <div class="row">
-        <div class="col-sm-12">
-
-            <h1>All Flights Available</h1>
-
-            <table id="flightsTable" class="table table-light table-striped table-hover">
-            {%  if flights_result %}
+        <h1>All Flights Available</h1>
+            <table id="myTable" class="table table-bordered">
+            {%  if status_code == 200 %}
                 <thead>
                 <tr>
-                    <th scope="col">Price</th>
-                    <th scope="col">Route</th>
+                    <th>Price</th>
+                    <th>Route</th>
                 </tr>
                 </thead>
                 <tbody>
                     {% for data in flights_result %}
-                        <tr>
-                            <td>{{ data["price"] }}</td>
-                            {%  for routes in data["route"] %}
-                            <td>{{ routes }}</td>
-                                {% endfor %}
-                        </tr>
-                        {% endfor %}
-                {%  else %}
-                    <div>
-                        <p> No flights found, please try different days </p>
-                    </div>
-                {% endif %}
+                        {%  if data["route"]|length == 1 %}
+                            <tr>
+                                <td>{{ data['price'] }}</td>
+                                <td>{{ data["route"] }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td rowspan="{{ data['route']|length }}">{{ data['price'] }}</td>
+                                <td>{{ data["route"][0] }}</td>
+                            </tr>
+                            {% for flight_con in data["route"][1:] %}
+                                <tr>
+                                    <td>{{ flight_con }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+            {% elif status_code == 400 %}
+                <tr>
+                    <td colspan="2">{{ flights_result["status"] }}</td>
+                    <td colspan="2">{{ flights_result["error"] }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="2">No flights found, please try different days</td>
+                </tr>
+            {% endif %}
                 </tbody>
             </table>
             <div class="">
                 <a href="{{ url_for('cheap_flight') }}">Return to cheap flights search</a>
             </div>
-        </div>
     </div>
 </div>
+
+</div>
+
+{% endblock %}
 
 

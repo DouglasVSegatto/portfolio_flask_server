@@ -1,26 +1,28 @@
 {% from "bootstrap5/form.html" import render_form %}
+{% extends 'base.html' %}
 
-{% include 'nav_bar.html' %}
+{% block page_title %}Cheap Flights{% endblock %}
 
-<div class="container text-center">
+{% block content %}
+<div id="content">
+    <!-- Ensure content is positioned within the navigation and footer -->
+
+    <div class="text-center">
         <h1>Cheap flights track!</h1>
 
-    <div class="container flight-form-container">
-        {{ render_form(form, novalidate=True) }}
+        <div id="flight-form" class="container flight-form-container">
+            {{ render_form(form, novalidate=True) }}
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
     </div>
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class="flashes">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
 </div>
-
-
-{% include 'footer.html' %}
-
-
+{% endblock %}
