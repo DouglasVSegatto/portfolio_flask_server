@@ -119,12 +119,13 @@ def sign_up():
 def login():
     login_form = LoginForm()
     if login_form.is_submitted():
-        """Find/Filter User data"""
-        result = db.session.execute(db.select(User).where(User.email == login_form.email.data))
-        exist_user = result.scalar()
+        """Find/Filter User by username/email"""
+        exist_user = User.query.filter_by(email=login_form.user_authentication.data).first()
+        if not exist_user:
+            exist_user = User.query.filter_by(username=login_form.user_authentication.data).first()
         """Treat the existing"""
         if exist_user:
-            if login_form.password.data is not exist_user.password:
+            if login_form.password.data != exist_user.password:
                 flash("Wrong password, try again.")
                 return redirect(url_for("login"))
             else:
