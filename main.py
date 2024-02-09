@@ -7,6 +7,7 @@ from website_forms import RegisterForm,LoginForm
 from flask_login import login_user, LoginManager, current_user,logout_user
 from sqlalchemy.orm import DeclarativeBase
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 """Imports from cheap_flights"""
 from applications.cheap_flights.flights_search import search_flights
