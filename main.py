@@ -13,12 +13,12 @@ from applications.cheap_flights.flights_search import search_flights
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get("FLASK_KEY")
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
 """ SQLALCHEMY """
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_INT_URL", "sqlite:///db_douglastopython.db")
 db = SQLAlchemy()
 db.init_app(app)
 
