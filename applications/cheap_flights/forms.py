@@ -12,7 +12,7 @@ class CheapFlights(FlaskForm):
     date_to = DateField(label="to: *", validators=[DataRequired()])
     return_from = DateField(label="Return date range, from:", validators=[Optional()])
     return_to = DateField(label="to:")
-    nights_in_dst_from = IntegerField(label='Overnight stay duration range, from:', validators=[NumberRange(min=1, message="Please enter valid number")])
+    nights_in_dst_from = IntegerField(label='Overnight stay duration, from:', validators=[NumberRange(min=1, message="Please enter valid number")])
     nights_in_dst_to = IntegerField(label='to:', validators=[NumberRange(min=1, message="Please enter valid number")])
     submit = SubmitField(label="Search")
 

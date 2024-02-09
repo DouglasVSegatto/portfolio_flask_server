@@ -11,7 +11,7 @@
 }
 
 .flight-form-container {
-    width: 80%;
+    width: 200%;
     max-width: 200px;
 }
 
@@ -47,6 +47,13 @@ body {
 
 .background-image-untilhere-container {
   background-image: url('../images/jonathan-borba-h7l1ChTUOMo-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.background-image-flight-container {
+  background-image: url('../images/jerry-zhang-OnXvKZldSJ0-unsplash.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
