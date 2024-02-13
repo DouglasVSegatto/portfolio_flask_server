@@ -1,16 +1,14 @@
-from flask import Flask, render_template, redirect, url_for, flash
-from datetime import datetime
-from applications.cheap_flights.forms import CheapFlights
-from flask_ckeditor import CKEditor
-from flask_bootstrap import Bootstrap5
-from website_forms import RegisterForm,LoginForm
-from flask_login import login_user, LoginManager, current_user,logout_user
-from sqlalchemy.orm import DeclarativeBase
-from flask_sqlalchemy import SQLAlchemy
 import os
+from datetime import datetime
 
-"""Imports from cheap_flights"""
+from flask import Flask, flash, redirect, render_template, url_for
+from flask_bootstrap import Bootstrap5
+from flask_ckeditor import CKEditor
+from flask_sqlalchemy import SQLAlchemy
+
 from applications.cheap_flights.flights_search import search_flights
+from applications.cheap_flights.forms import CheapFlights
+from website_forms import LoginForm, RegisterForm
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False

@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField,SelectField, DateField
-from wtforms.validators import DataRequired, Email, Length, NumberRange, ValidationError, Optional
+from wtforms import DateField, IntegerField, SelectField, SubmitField
+from wtforms.validators import DataRequired, NumberRange, Optional
 
 airport_database = ["","YVR - Vancouver", "YYC - Calgary", "YEG - Edmonton", "YYZ - Toronto"]
 

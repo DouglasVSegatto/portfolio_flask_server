@@ -26,8 +26,6 @@ def update_airline_name(airline_id) -> str:
         "TK": "Turkish Airlines"
     }
 
-    data = []
-
     if airline_id in airlines_dict:
         return airlines_dict[airline_id]
     else:

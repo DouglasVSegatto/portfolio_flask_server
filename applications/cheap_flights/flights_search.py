@@ -1,5 +1,7 @@
 import os
+
 import requests
+
 from .data_manager import format_flight_route
 
 """
