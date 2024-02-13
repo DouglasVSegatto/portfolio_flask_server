@@ -8,7 +8,6 @@ Tequila data
 
 TEQUILA_ENDPOINT = "https://api.tequila.kiwi.com"
 API_KEY_TEQUILA = os.environ.get("PYTHON_TEQUILA_APIKEY")
-TEQUILA_ENDPOINT = "https://api.tequila.kiwi.com"
 flights_report = []
 
 
@@ -67,13 +66,25 @@ def search_flights(**kwargs):
     * Move some data into a variable and do a filter from there
     * Keep adding IF (like current one)
     * Quit dev(LOL)
+    
+    TOANSWER: 
+    Add your "escape hatches" early and organize the if statements in a smart way.  If it's code 400, return.  
+    There is no point even looking at the rest of the code.  If you do it in this order, the last `else` isn't 
+    needed at all because each of the other cases `return` so the only way to get there now is if neither of 
+    the other if statements are true. 
     """
+    if response.status_code == 400:
+        return result, response.status_code
+
     if response.status_code == 200:
         for data in result["data"]:
-            if data["availability"]["seats"] is not None and data["availability"]["seats"] >= adults:
-                flights_report.append({"price": data["fare"]["adults"], "route": format_flight_route(data["route"])})
+            if data["availability"]["seats"] and (data["availability"]["seats"] >= adults):
+                flights_report.append(
+                    {
+                        "price": data["fare"]["adults"],
+                        "route": format_flight_route(data["route"])
+                    }
+                )
         return flights_report, response.status_code
-    elif response.status_code == 400:
-        return result, response.status_code
-    else:
-        return None, None
+
+    return None, None
