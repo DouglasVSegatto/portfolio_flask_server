@@ -2,11 +2,15 @@ from datetime import datetime
 
 
 def update_airline_name(airline_id) -> str:
-
     """
     Update airline IDs to their corresponding names using a predefined dictionary.
-    Args: - airline_id (List[str]): A list of airline IDs to be updated.
-    Returns: - str: A string containing updated airline names or IDs joined by ', '.
+
+    :param:
+    airline_id(str): The airline ID to be updated.
+
+    :returns:
+    str: A string containing the updated airline name OR the original ID if not found.
+
     """
 
     airlines_dict = {
@@ -21,28 +25,46 @@ def update_airline_name(airline_id) -> str:
         "F8": "Flair Airlines",
         "Y9": "Linx Air",
         "LA": "LATAM Airlines",
-        "AA": "American Airlinas",
+        "AA": "American Airlines",
         "4N": "Air North",
         "TK": "Turkish Airlines"
     }
 
-    data = []
-
-    if airline_id in airlines_dict:
+    try:
         return airlines_dict[airline_id]
-    else:
-        return airline_id
+    except KeyError:
+        return str(airline_id)
 
 
-def format_flight_route(flight_routes) -> str:
-    """ Format the flight route information into a string """
+def format_flight_route(flight_routes) -> list[str]:
+    """
+    Format flight_routes information into a string/text per route.
 
-    def format_datetime(datetime_str):
+    :param:
+    flight_routes: A list of dictionaries with  flight route information.
+
+    :return:
+    List[str]: A list of formatted strings representing each flight route
+
+    Notes:
+    format_datetime function converts local_departure and local_arrival to a human-readable str
+    """
+
+    def format_datetime(datetime_str) -> str:
+        """
+        Format a datetime_str into a human-readable(str).
+
+        Args:
+            datetime_str (int): timestamp from API data.
+
+        Returns:
+            str: A string with formatted datetime ("DD/MM/YY at HH:MM").
+        """
+
         date = datetime.fromtimestamp(datetime_str)
-        """ Format datetime object as string 'dd/mm/yy at 00:00 hours'"""
         return date.strftime('%d/%m/%y at %H:%M')
 
-    formatted_text = []
+    full_route_str = []
     for route in flight_routes:
         fly_from = route["flyFrom"]
         city_from = route["cityFrom"]
@@ -53,7 +75,15 @@ def format_flight_route(flight_routes) -> str:
         flight_no = route["flight_no"]
         airline = update_airline_name(route["airline"])
 
-        formatted_text.append(
-            f"{airline} | Flight number: {flight_no} - {fly_from}({city_from}) to {fly_to}({city_to}) - Departure: {local_departure} - Arrival: {local_arrival}. ")
-    return formatted_text
+        # full_route_str.append(
+        #     f"{update_airline_name(route['airline'])} | "
+        #     f"Flight number: {route['flight_no']} - "
+        #     f"{route['flyFrom']}({route['cityFrom']}) to {route['flyTo']}({route['cityTo']}) - "
+        #     f"Departure: {format_datetime(route['dTime'])} - Arrival: {format_datetime(route['aTime'])}.")
 
+        full_route_str.append(
+            f"{airline} | "
+            f"Flight number: {flight_no} - "
+            f"{fly_from}({city_from}) to {fly_to}({city_to}) - "
+            f"Departure: {local_departure} - Arrival: {local_arrival}.")
+    return full_route_str

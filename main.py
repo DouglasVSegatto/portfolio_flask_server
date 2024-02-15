@@ -1,23 +1,30 @@
-from flask import Flask, render_template, redirect, url_for, flash
+import os
 from datetime import datetime
-from applications.cheap_flights.forms import CheapFlights
-from flask_ckeditor import CKEditor
+
+from flask import Flask, flash, redirect, render_template, url_for
 from flask_bootstrap import Bootstrap5
-from website_forms import RegisterForm,LoginForm
-from flask_login import login_user, LoginManager, current_user,logout_user
-from sqlalchemy.orm import DeclarativeBase
+from flask_ckeditor import CKEditor
+from flask_login import (LoginManager, UserMixin, current_user, login_required,
+                         login_user, logout_user)
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
+from werkzeug import security
+
+from applications.cheap_flights.forms import CheapFlights
+from website_forms import LoginForm, RegisterForm
 
 """Imports from cheap_flights"""
 from applications.cheap_flights.flights_search import search_flights
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get("FLASK_KEY")
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
+#TODO remember to invert app.config prior to commit
 """ SQLALCHEMY """
+#app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_INT_URL", "sqlite:///db_douglastopython.db")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 db = SQLAlchemy()
 db.init_app(app)
@@ -27,12 +34,12 @@ db.init_app(app)
 #TODO:
 # Review ID, if required
 # Create relationship in between databases
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
-    email = db.Column(db.String(100))
+    email = db.Column(db.String(100), unique=True)
 
 #TODO:
 # Create relationship in between databases
@@ -53,7 +60,15 @@ class FlightsTrack(db.Model):
 with app.app_context():
     db.create_all()
 
-""" ## """
+""" LOGIN Handler """
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.get_or_404(User, user_id)
+
 
 @app.route("/")
 def home():
@@ -61,6 +76,7 @@ def home():
     return render_template("main.html", year=current_year)
 
 @app.route("/cheap_flights", methods=["GET", "POST"])
+@login_required
 def cheap_flight():
     form_cf = CheapFlights()
     if form_cf.is_submitted():
@@ -89,23 +105,36 @@ def cheap_flight():
 
 @app.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
+    """
+    Sign Up user process.
+
+    This function receives form submitted by the user.
+    It checks if the username or email exists in the database.
+    If the user does not exist:
+        it registers the new user and returns a welcome page.
+    If the user already exists:
+        it displays an appropriate error message.
+
+    :returns:
+    successful registration: the function renders "sign_up_welcome.html".
+    validation errors or user already exists: the function flashes errors on "sign_up.html".
+
+    """
+
     reg_form = RegisterForm()
     if reg_form.is_submitted():
-        """Filter both, username and email"""
-        exist_user = User.query.filter(
+        user_exist = User.query.filter(
             (User.email == reg_form.username.data) | (User.username == reg_form.email.data)).first()
-        """Treat the existing"""
-        if exist_user:
-            if reg_form.username.data == exist_user.username:
+        if user_exist:
+            if reg_form.username.data == user_exist.username:
                 flash("Username already in use.")
-            elif reg_form.email.data == exist_user.email:
+            elif reg_form.email.data == user_exist.email:
                 flash("Email already registered")
         else:
-            """Register the new user"""
             new_user = User(
-                username = reg_form.username.data,
-                password = reg_form.password.data,
-                email = reg_form.email.data
+                username = reg_form.username.data.lower(),
+                password = security.generate_password_hash(reg_form.password.data, method="pbkdf2", salt_length=8),
+                email = reg_form.email.data.lower()
             )
             db.session.add(new_user)
             db.session.commit()
@@ -119,18 +148,36 @@ def login():
     login_form = LoginForm()
     if login_form.is_submitted():
         """Find/Filter User data"""
-        result = db.session.execute(db.select(User).where(User.email == login_form.email.data))
-        exist_user = result.scalar()
-        """Treat the existing"""
-        if exist_user:
-            if login_form.password.data is not exist_user.password:
+        user_exist = User.query.filter_by(email=login_form.user_authentication.data).first()
+        if not user_exist:
+            user_exist = User.query.filter_by(username=login_form.user_authentication.data).first()
+        if user_exist:
+            if not security.check_password_hash(user_exist.password, login_form.password.data):
                 flash("Wrong password, try again.")
                 return redirect(url_for("login"))
             else:
+                login_user(user_exist)
                 return render_template("login_welcome.html")
+
         flash("Username/Email does not exist.")
         return redirect(url_for ("login"))
-    return render_template("login.html", form=login_form)
+    return render_template("login.html", form=login_form, current_user=current_user)
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("home"))
+
+@app.route("/example")
+@login_required
+def example():
+    return render_template("example.html")
+
+@app.route("/until_here")
+@login_required
+def until_here():
+    return render_template("until_here.html")
 
 
 if __name__ == "__main__":

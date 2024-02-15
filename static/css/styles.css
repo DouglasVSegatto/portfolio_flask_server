@@ -1,10 +1,4 @@
 
-#profile-picture { /* future */
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-}
-
 .flashes {
     color: #d55b44;
     text-align: center;
@@ -19,6 +13,7 @@
     content: "*";
     color: red;
 }
+
 
 /*####################*/
 
@@ -38,7 +33,7 @@ body {
   background-repeat: no-repeat;
 }
 
-.background-image-carrier-container {
+.background-image-career-container {
   background-image: url('../images/ramon-bucard-qA3EyF9G2dE-unsplash.jpg');
   background-size: cover;
   background-position: center;
@@ -57,4 +52,17 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.letter-body {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: "Times New Roman", sans-serif;
+    border-radius: 5px;
+}
+
+.it-part {
+    color: #ff6600; /* Choose a different color for the "IT" part */
+    font-weight: bold; /* Make the "IT" part bold */
 }

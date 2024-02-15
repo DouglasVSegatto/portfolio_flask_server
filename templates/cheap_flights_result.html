@@ -7,7 +7,7 @@
     <div class="row">
         <h1>All Flights Available</h1>
             <table id="myTable" class="table table-bordered">
-            {%  if status_code == 200 %}
+            {%  if flights_result and status_code == 200 %}
                 <thead>
                 <tr>
                     <th>Price</th>

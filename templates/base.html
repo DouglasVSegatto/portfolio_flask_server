@@ -4,7 +4,6 @@
 <head>
     <!-- External Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
     <!-- Local Styles and Bootstrap-Flask -->
     <meta charset="UTF-8">
@@ -23,7 +22,7 @@
 
 <body>
 
-<nav id="main-nav" class="p-3 text-bg-light">
+<nav class="p-3 text-bg-light">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
@@ -33,13 +32,31 @@
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li><a href="{{ url_for('home') }}" class="nav-link px-2 text-secondary ">Home</a></li>
           <li><a href="{{ url_for('cheap_flight') }}" class="nav-link px-2 text-black">Cheap Flights</a></li>
-{#          <li><a href="#" class="nav-link px-2 text-black">Project2</a></li>#}
-{#          <li><a href="#" class="nav-link px-2 text-black">Project3</a></li>#}
-{#          <li><a href="#" class="nav-link px-2 text-black">About</a></li>#}
+        {% if current_user.is_authenticated %}
+          <li><a href="{{ url_for('example') }}" class="nav-link px-2 text-black">Example</a></li>
+        {% endif %}
+
         </ul>
-        <div class="text-end">
-          <a href="{{ url_for('login') }}" class="btn btn-outline-dark me-2">Login</a>
-          <a href="{{ url_for('sign_up') }}" class="btn btn-warning">Sign-up</a>
+          <div class="col-md-3 text-end">
+          {% if current_user.is_authenticated %}
+              <div class="dropdown text-end">
+              <a href="#" class="link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="32" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                  <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                </svg>
+              </a>
+              <ul class="dropdown-menu text-small">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{{ url_for('logout') }}">Sign out</a></li>
+              </ul>
+        </div>
+          {% else %}
+              <a href="{{ url_for('login') }}" class="btn btn-outline-dark me-2">Login</a>
+              <a href="{{ url_for('sign_up') }}" class="btn btn-warning">Sign Up</a>
+          {% endif %}
+
        </div>
      </div>
    </div>
@@ -48,7 +65,6 @@
 <!-- For future reference: configured base.html to be extended for other pages.
 Explaination: New html page only requires html code, header and footer will be loaded based on this "base.html"
               See main.html as example -->
-
 <div id="content" class="container">
     {% block content %}{% endblock %}
 </div>
@@ -87,7 +103,8 @@ Explaination: New html page only requires html code, header and footer will be l
   </footer>
 </div>
       <!-- Bootstrap core JS-->
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
 
   </body>
 </html>

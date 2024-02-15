@@ -1,21 +1,48 @@
+import json
 import os
+
 import requests
+
 from .data_manager import format_flight_route
 
+
 """
-Tequila data
+Tequila is API been used here to pull flights route
 """
 
 TEQUILA_ENDPOINT = "https://api.tequila.kiwi.com"
 API_KEY_TEQUILA = os.environ.get("PYTHON_TEQUILA_APIKEY")
-TEQUILA_ENDPOINT = "https://api.tequila.kiwi.com"
 flights_report = []
 
 
 def search_flights(**kwargs):
     """
-    To handle many entries im using **kwargs.
-    using .get to handle empty/none values
+    This main code, requests, reads and filter data based on status_code returned from API.
+
+    status_code == 200: Data received, execute rest of the code and return Flights_route to User
+    status_code == 400: Request not accepted, "error msg" will be passed to User
+    status_code == else: "No flights available" will be prompted to User
+
+    :param:
+    kwargs: To handle many entries im using **kwargs and using .get to capture the data.
+        - fly_from (str): Departure airport code.
+        - fly_to (str): Arrival airport code.
+        - date_from (str): Departure date from (YYYY-MM-DD format).
+        - date_to (str): Departure date to (YYYY-MM-DD format).
+        - return_from (str): Return date from (YYYY-MM-DD format).
+        - return_to (str): Return date to (YYYY-MM-DD format).
+        - nights_in_dst_from (int): Minimum number of nights at the destination.
+        - nights_in_dst_to (int): Maximum number of nights at the destination.
+        - adults (int): Number of adult passengers.
+   :arg:
+    body:Contains values passed by User and statics
+    * I'm keeping some data static as its for personal purpose.
+    response: HTTP response containing flight data.
+
+    :returns:
+    flights_report: contains all data filtered and cleaned.
+    response.status_code: Used as parameter for different status code from server
+
     """
 
     fly_from = kwargs.get('fly_from')
@@ -28,11 +55,6 @@ def search_flights(**kwargs):
     nights_in_dst_to = kwargs.get('nights_in_dst_to')
     adults = kwargs.get('adults')
 
-    """
-    I'm keeping some data static as its for personal purpose.
-    PS: now its up to you for amount of people,
-    if you change the amount adults variable it will filter considering available seats
-    """
     search_endpoint = f"{TEQUILA_ENDPOINT}/search"
     body = {
         'fly_from': fly_from,
@@ -46,11 +68,9 @@ def search_flights(**kwargs):
         "curr": "CAD",
         "selected_cabins": "C",
         "mix_with_cabins": "M",
-        # "ret_from_diff_city": False,
-        # "ret_to_diff_city":True,
         "adults": adults,
         "vehicle_type": "aircraft",
-        "max_stopovers": 0
+        "max_stopovers": 2
     }
     headers = {
         "apikey": API_KEY_TEQUILA,
@@ -59,18 +79,10 @@ def search_flights(**kwargs):
 
     response = requests.get(search_endpoint, headers=headers, params=body)
     result = response.json()
-    print(response.status_code)
-    print(result)
 
-    """
-    TOASK: I have many IFs here, whats best approach?
-    * Move some data into a variable and do a filter from there
-    * Keep adding IF (like current one)
-    * Quit dev(LOL)
-    """
     if response.status_code == 200:
         for data in result["data"]:
-            if data["availability"]["seats"] is not None and data["availability"]["seats"] >= adults:
+            if data["availability"]["seats"] and data["availability"]["seats"] >= adults:
                 flights_report.append({"price": data["fare"]["adults"], "route": format_flight_route(data["route"])})
         return flights_report, response.status_code
     elif response.status_code == 400:
