@@ -76,7 +76,6 @@ def home():
     return render_template("main.html", year=current_year)
 
 @app.route("/cheap_flights", methods=["GET", "POST"])
-@login_required
 def cheap_flight():
     form_cf = CheapFlights()
     if form_cf.is_submitted():
@@ -175,7 +174,6 @@ def example():
     return render_template("example.html")
 
 @app.route("/until_here")
-@login_required
 def until_here():
     return render_template("until_here.html")
 
