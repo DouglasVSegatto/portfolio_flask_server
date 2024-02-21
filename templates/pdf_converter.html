@@ -1,0 +1,29 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends 'base.html' %}
+
+{% block page_title %}PDF Converter{% endblock %}
+
+{% block content %}
+
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3 text-center">
+      <div class="container-fluid py-5">
+        <h1>PDF Converter</h1>
+
+        <div id="pdfconverter-form" class="container pdfconverter-form-container">
+            {{ render_form(form, novalidate=True) }}
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+</div>
+
+{% endblock %}

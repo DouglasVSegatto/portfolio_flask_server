@@ -1,0 +1,24 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends 'base.html' %}
+
+{% block page_title %}PDF Converter download{% endblock %}
+
+{% block content %}
+
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3 text-center">
+      <div class="container-fluid py-5">
+        <h1>PDF Converter</h1>
+            <table class="table table-striped table-bordered">
+                <tbody>
+                    {% for filename, url in download_urls %}
+                        <tr>
+                            <th><a href="{{ url }}">{{ filename }}</a></th>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    </div>
+</div>
+</div>
+
+{% endblock %}

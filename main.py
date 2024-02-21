@@ -1,7 +1,8 @@
 import os
 from datetime import datetime
+from threading import Thread
 
-from flask import Flask, flash, redirect, render_template, url_for
+from flask import Flask, flash, redirect, render_template, send_file, url_for
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_login import (LoginManager, UserMixin, current_user, login_required,
@@ -9,12 +10,19 @@ from flask_login import (LoginManager, UserMixin, current_user, login_required,
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug import security
+from werkzeug.utils import secure_filename, send_from_directory
 
-from applications.cheap_flights.forms import CheapFlights
 from website_forms import LoginForm, RegisterForm
 
 """Imports from cheap_flights"""
 from applications.cheap_flights.flights_search import search_flights
+from applications.cheap_flights.forms import CheapFlights
+
+""" PDF converter """
+from applications.pdf_converter.data_manager import (delete_files,
+                                                     generate_download_link,
+                                                     pdf2image)
+from applications.pdf_converter.forms import Img2Pdf
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -22,16 +30,17 @@ app.config['SECRET_KEY'] = os.environ.get("FLASK_KEY")
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
-#TODO remember to invert app.config prior to commit
+# TODO remember to invert app.config prior to commit
 """ SQLALCHEMY """
-#app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_INT_URL", "sqlite:///db_douglastopython.db")
+# app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_INT_URL", "sqlite:///db_douglastopython.db")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 db = SQLAlchemy()
 db.init_app(app)
 
-
 """ DATABASE """
-#TODO:
+
+
+# TODO:
 # Review ID, if required
 # Create relationship in between databases
 class User(db.Model, UserMixin):
@@ -41,7 +50,8 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True)
 
-#TODO:
+
+# TODO:
 # Create relationship in between databases
 class FlightsTrack(db.Model):
     __tablename__ = "flights_track"
@@ -75,6 +85,7 @@ def home():
     current_year = datetime.now().year
     return render_template("main.html", year=current_year)
 
+
 @app.route("/cheap_flights", methods=["GET", "POST"])
 def cheap_flight():
     form_cf = CheapFlights()
@@ -100,6 +111,37 @@ def cheap_flight():
             """added status_code to format the output for user on html per status_code msg """
             return render_template("cheap_flights_result.html", flights_result=flights_result, status_code=status_code)
     return render_template("cheap_flights.html", form=form_cf)
+
+
+################
+
+
+@app.route("/pdf_converter", methods=["GET", "POST"])
+def pdf_converter():
+    form_pdfconverter = Img2Pdf()
+    if form_pdfconverter.is_submitted():
+        filename = secure_filename(form_pdfconverter.file.data.filename)
+        filename_no_ext = os.path.splitext(filename)[0]
+        upload_path = "applications/pdf_converter/upload/" + filename
+        converted_path = "applications/pdf_converter/converted/" + filename_no_ext
+        form_pdfconverter.file.data.save(upload_path)
+        if form_pdfconverter.conversion.data == "pdf_to_image":
+            validate = pdf2image(upload_path, converted_path, filename_no_ext)
+            if validate:
+                download_link = generate_download_link(filename_no_ext, converted_path)
+                delete_thread = Thread(target=delete_files(upload_path,converted_path))
+                delete_thread.start()
+                return render_template('pdf_converter_result.html', download_urls=download_link)
+    return render_template("pdf_converter.html", form=form_pdfconverter)
+
+
+@app.route('/download/<folder>/<filename>', methods=['GET'])
+def download_file(folder, filename):
+    converted_path = f"applications/pdf_converter/converted/{folder}/{filename}"
+    return send_file(converted_path, as_attachment=True)
+
+
+#########
 
 
 @app.route("/sign-up", methods=["GET", "POST"])
@@ -131,9 +173,9 @@ def sign_up():
                 flash("Email already registered")
         else:
             new_user = User(
-                username = reg_form.username.data.lower(),
-                password = security.generate_password_hash(reg_form.password.data, method="pbkdf2", salt_length=8),
-                email = reg_form.email.data.lower()
+                username=reg_form.username.data.lower(),
+                password=security.generate_password_hash(reg_form.password.data, method="pbkdf2", salt_length=8),
+                email=reg_form.email.data.lower()
             )
             db.session.add(new_user)
             db.session.commit()
@@ -159,8 +201,9 @@ def login():
                 return render_template("login_welcome.html")
 
         flash("Username/Email does not exist.")
-        return redirect(url_for ("login"))
+        return redirect(url_for("login"))
     return render_template("login.html", form=login_form, current_user=current_user)
+
 
 @app.route("/logout")
 @login_required
@@ -168,10 +211,12 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
+
 @app.route("/example")
 @login_required
 def example():
     return render_template("example.html")
+
 
 @app.route("/until_here")
 def until_here():
