@@ -29,7 +29,7 @@ def delete_files(upload_file, download_folder):
     except OSError as e:
         print(f"Error deleting folder '{upload_file}': {e}")
 
-    time.sleep(10)
+    time.sleep(180)
     try:
         shutil.rmtree(download_folder)
         print(f"Folder '{download_folder}' and its contents deleted successfully.")
