@@ -118,6 +118,8 @@ def cheap_flight():
 
 @app.route("/pdf_converter", methods=["GET", "POST"])
 def pdf_converter():
+    print("PDF_converter")
+    print(app.root_path)
     form_pdfconverter = Img2Pdf()
     if form_pdfconverter.is_submitted():
         filename = secure_filename(form_pdfconverter.file.data.filename)
