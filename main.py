@@ -124,8 +124,10 @@ def pdf_converter():
     if form_pdfconverter.is_submitted():
         filename = secure_filename(form_pdfconverter.file.data.filename)
         filename_no_ext = os.path.splitext(filename)[0]
-        upload_path = "static/upload/" + filename
-        converted_path = "static/converted/" + filename_no_ext
+        upload_path = os.path.join(app.root_path,"static", "upload",filename )
+        converted_path = os.path.join(app.root_path,"static", "download",filename_no_ext )
+        print(upload_path, converted_path)
+
         form_pdfconverter.file.data.save(upload_path)
         if form_pdfconverter.conversion.data == "pdf_to_image":
             validate = pdf2image(upload_path, converted_path, filename_no_ext)
@@ -139,7 +141,8 @@ def pdf_converter():
 
 @app.route('/download/<folder>/<filename>', methods=['GET'])
 def download_file(folder, filename):
-    converted_path = f"static/converted/{folder}/{filename}"
+    print("final")
+    converted_path = f"static/download/{folder}/{filename}"
     return send_file(converted_path, as_attachment=True)
 
 

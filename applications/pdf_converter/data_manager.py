@@ -11,10 +11,9 @@ def pdf2image(upload_path, converted_path, filename):
     if not os.path.exists(converted_path):
         os.makedirs(converted_path)
     try:
-
         conv_images = convert_from_path(upload_path)
         for index, image in enumerate(conv_images):
-            new_file = f"{converted_path}/{filename}_{index + 1}.jpg"
+            new_file = os.path.join(converted_path, f"{filename}_{index + 1}.jpg")
             print(new_file)
             image.save(new_file)
         return True
@@ -41,9 +40,9 @@ def generate_download_link(filename_no_ext, converted_path):
     # Create a list to store download URLs
     download_urls = []
     # List the files in the directory
-    print(converted_path)
+    print(os.listdir(converted_path))
     for filename in os.listdir(converted_path):
         file_url = url_for("download_file", folder=filename_no_ext, filename=filename)
-        download_urls.append((filename,file_url))  # Store filename and download URL
+        download_urls.append((filename, file_url))  # Store filename and download URL
     print(download_urls)
     return download_urls
