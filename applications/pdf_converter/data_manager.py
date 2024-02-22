@@ -44,5 +44,4 @@ def generate_download_link(filename_no_ext, converted_path):
     for filename in os.listdir(converted_path):
         file_url = url_for("download_file", folder=filename_no_ext, filename=filename)
         download_urls.append((filename, file_url))  # Store filename and download URL
-    print(download_urls)
     return download_urls
