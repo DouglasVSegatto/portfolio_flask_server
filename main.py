@@ -8,10 +8,10 @@ from flask_ckeditor import CKEditor
 from flask_login import (LoginManager, UserMixin, current_user, login_required,
                          login_user, logout_user)
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 from werkzeug import security
-from werkzeug.utils import secure_filename, send_from_directory
 
+from global_functions import (download_file_path, remove_extension,
+                              upload_file_path)
 from website_forms import LoginForm, RegisterForm
 
 """Imports from cheap_flights"""
@@ -21,7 +21,7 @@ from applications.cheap_flights.forms import CheapFlights
 """ PDF converter """
 from applications.pdf_converter.data_manager import (delete_files,
                                                      generate_download_link,
-                                                     pdf2image)
+                                                     image2pdf, pdf2image)
 from applications.pdf_converter.forms import Img2Pdf
 
 app = Flask(__name__)
@@ -82,21 +82,41 @@ def load_user(user_id):
 
 @app.route("/")
 def home():
+    """
+    Main website page call.
+
+    :return: Current year.
+    :rtype: int
+    """
     current_year = datetime.now().year
     return render_template("main.html", year=current_year)
 
 
 @app.route("/cheap_flights", methods=["GET", "POST"])
 def cheap_flight():
+    """
+    Displays a form for searching cheap flights and forward the submitted form data.
+
+    If the form is submitted:
+        Function checks origin airport and destination airport are different.
+            If they are the same, it displays an error message.
+            If they are different, it processed with request, using the provided parameters.
+
+    Flight search is performed using values from the submitted form,
+    which are sent to the Tequila API via a POST request.
+
+    :return: If the form is submitted
+                flights_result returns a list to be rendered in search results.
+                status_code returns status code from request in INT
+                    if status == 200: good
+                    if status == 400: flights_result will be a dict with invalid parameters explained.
+    :rtype: list,int or dict,int
+    """
     form_cf = CheapFlights()
     if form_cf.is_submitted():
-        """ IF to identify duplicated airport """
         if form_cf.fly_to.data == form_cf.fly_from.data:
             flash("Please select different Origin and Destination airports.", "error")
         else:
-            """
-            Flight search with values in Tequila API using POST FORM data
-            """
             flights_result, status_code = search_flights(
                 fly_from=form_cf.fly_from.data.split()[0],
                 fly_to=form_cf.fly_to.data.split()[0],
@@ -108,7 +128,6 @@ def cheap_flight():
                 nights_in_dst_to=form_cf.nights_in_dst_to.data,
                 adults=form_cf.adults.data
             )
-            """added status_code to format the output for user on html per status_code msg """
             return render_template("cheap_flights_result.html", flights_result=flights_result, status_code=status_code)
     return render_template("cheap_flights.html", form=form_cf)
 
@@ -118,30 +137,35 @@ def cheap_flight():
 
 @app.route("/pdf_converter", methods=["GET", "POST"])
 def pdf_converter():
-    print("PDF_converter")
-    print(app.root_path)
     form_pdfconverter = Img2Pdf()
     if form_pdfconverter.is_submitted():
-        filename = secure_filename(form_pdfconverter.file.data.filename)
-        filename_no_ext = os.path.splitext(filename)[0]
-        upload_path = os.path.join(app.root_path,"static", "upload",filename )
-        converted_path = os.path.join(app.root_path,"static", "download",filename_no_ext )
-        print(upload_path, converted_path)
-
-        form_pdfconverter.file.data.save(upload_path)
+        filename = form_pdfconverter.file.data.filename
+        form_pdfconverter.file.data.save(upload_file_path(filename))
         if form_pdfconverter.conversion.data == "pdf_to_image":
-            validate = pdf2image(upload_path, converted_path, filename_no_ext)
+            validate = pdf2image(filename)
             if validate:
-                download_link = generate_download_link(filename_no_ext, converted_path)
-                delete_thread = Thread(target=delete_files, args=(upload_path,converted_path))
+                download_link = generate_download_link(filename)
+                delete_thread = Thread(target=delete_files, args=(filename,))
                 delete_thread.start()
                 return render_template('pdf_converter_result.html', download_urls=download_link)
+            else:
+                flash("Wrong file type, please upload a valid PDF file")
+        elif form_pdfconverter.conversion.data == "image_to_pdf":
+            validate = image2pdf(filename)
+            if validate:
+                download_link = generate_download_link(filename)
+                delete_thread = Thread(target=delete_files, args=(filename,))
+                delete_thread.start()
+                return render_template('pdf_converter_result.html', download_urls=download_link)
+            else:
+                flash("Wrong file type, please upload a valid JPG/PNG file")
+        else:
+            flash("An error occur, please try again in a few minutes")
     return render_template("pdf_converter.html", form=form_pdfconverter)
 
 
 @app.route('/download/<folder>/<filename>', methods=['GET'])
 def download_file(folder, filename):
-    print("final")
     converted_path = f"static/download/{folder}/{filename}"
     return send_file(converted_path, as_attachment=True)
 
