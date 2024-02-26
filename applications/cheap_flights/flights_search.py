@@ -5,7 +5,6 @@ import requests
 
 from .data_manager import format_flight_route
 
-
 """
 Tequila is API been used here to pull flights route
 """
