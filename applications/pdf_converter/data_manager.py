@@ -31,7 +31,8 @@ def pdf2image(filename):
     try:
         conv_images = convert_from_path(upload_file_path(filename))
         for index, image in enumerate(conv_images):
-            new_file = os.path.join(download_file_path(remove_extension(filename)), f"{filename}_{index + 1}.jpg")
+            new_file = os.path.join(download_file_path(remove_extension(filename)),
+                                    f'{remove_extension(filename)}_{index + 1}.jpg')
             image.save(new_file)
         return True
     except (IOError, FileNotFoundError, PDFSyntaxError):
@@ -83,10 +84,10 @@ def delete_files(filename):
     except OSError as e:
         print(f"Error deleting file '{remove_extension(filename)}': {e}")
 
-    time.sleep(10)
+    time.sleep(180)
     try:
         shutil.rmtree(download_file_path(remove_extension(filename)))
-        print(f"Folder '{download_file_path(remove_extension(filename))}' and its contents deleted successfully.")
+        print(f"Folder '{download_file_path(remove_extension(filename))}' and its contents were deleted successfully.")
     except OSError as e:
         print(f"Error deleting folder '{download_file_path(remove_extension(filename))}': {e}")
 
