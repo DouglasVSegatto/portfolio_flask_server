@@ -16,8 +16,3 @@ class CheapFlights(FlaskForm):
     nights_in_dst_to = IntegerField(label='to:', validators=[NumberRange(min=1, message="Please enter valid number")])
     submit = SubmitField(label="Search")
 
-
-
-"""
-If you add more forms here it will be automatically pulled by bootstrap forms generator and show more optios on the page
-"""

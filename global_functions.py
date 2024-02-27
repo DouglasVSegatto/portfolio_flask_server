@@ -3,7 +3,7 @@ import os
 """
 Created this 'global_functions' as few can be reused many times by other apps.
 """
-#TODO: Update cheap_fligs to use remove_extension
+
 def remove_extension(filename):
     """
     Remove the file extension from the given filename and return the main name.

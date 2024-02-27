@@ -132,9 +132,6 @@ def cheap_flight():
     return render_template("cheap_flights.html", form=form_cf)
 
 
-################
-
-
 @app.route("/pdf_converter", methods=["GET", "POST"])
 def pdf_converter():
     form_pdfconverter = Img2Pdf()
@@ -168,9 +165,6 @@ def pdf_converter():
 def download_file(folder, filename):
     converted_path = f"static/download/{folder}/{filename}"
     return send_file(converted_path, as_attachment=True)
-
-
-#########
 
 
 @app.route("/sign-up", methods=["GET", "POST"])
