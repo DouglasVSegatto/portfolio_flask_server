@@ -13,10 +13,8 @@ from werkzeug import security
 from forms import CheapFlights, Img2Pdf, LoginForm, RegisterForm
 from global_functions import upload_file_path
 
-"""Imports from cheap_flights"""
 from applications.cheap_flights.flights_search import search_flights
 
-""" PDF converter """
 from applications.pdf_converter.data_manager import (delete_files,
                                                      generate_download_link,
                                                      image2pdf, pdf2image)
