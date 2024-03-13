@@ -10,19 +10,16 @@ from flask_login import (LoginManager, UserMixin, current_user, login_required,
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug import security
 
-from global_functions import (download_file_path, remove_extension,
-                              upload_file_path)
-from website_forms import LoginForm, RegisterForm
+from forms import CheapFlights, Img2Pdf, LoginForm, RegisterForm
+from global_functions import upload_file_path
 
 """Imports from cheap_flights"""
 from applications.cheap_flights.flights_search import search_flights
-from applications.cheap_flights.forms import CheapFlights
 
 """ PDF converter """
 from applications.pdf_converter.data_manager import (delete_files,
                                                      generate_download_link,
                                                      image2pdf, pdf2image)
-from applications.pdf_converter.forms import Img2Pdf
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
