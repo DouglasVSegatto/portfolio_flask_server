@@ -75,7 +75,7 @@ def delete_files(filename):
     :return: None
     :rtype: None
 
-    PS: Keeping in print as current server doesn't have log available
+    PS: Keeping in print as plataform doesn't allow access to local logs.
     """
 
     try:
@@ -84,7 +84,7 @@ def delete_files(filename):
     except OSError as e:
         print(f"Error deleting file '{remove_extension(filename)}': {e}")
 
-    time.sleep(180)
+    time.sleep(60)
     try:
         shutil.rmtree(download_file_path(remove_extension(filename)))
         print(f"Folder '{download_file_path(remove_extension(filename))}' and its contents were deleted successfully.")
