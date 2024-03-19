@@ -39,15 +39,15 @@ def l_per_100km_to_km_per_l(l_per_100km):
     return km_per_l
 
 
-def mpg_to_km_per_100(mpg):
+def mpg_to_l_per_100(mpg):
     """
     Convert miles per gallon (mpg) to kilometers per 100 miles.
 
     :param mpg: Miles per gallon to be converted.
     :type mpg: Float.
-    :return: MPG converted in kilometers per 100 miles.
+    :return: MPG converted in liters/100km.
     :rtype: Float.
     """
 
-    km_per_100 = 100 / (mpg * 0.621371)  # 0.621371 is the conversion factor from miles to kilometers
-    return km_per_100
+    l_per_100 = 100 / (mpg * 0.621371)  # 0.621371 is the conversion factor from miles to kilometers
+    return l_per_100

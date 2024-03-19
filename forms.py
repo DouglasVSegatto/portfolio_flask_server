@@ -48,7 +48,7 @@ class UnitConverter(FlaskForm):
                             choices=[('km_to_mile', 'Km to Mile'),
                                      ('mile_to_km', 'Mile to Mm'),
                                      ('liter100_to_kmliter', 'Liter/100km to Km/Liter'),
-                                     ('mpg_to_km_per_100', 'MPG to Liter/100'),
+                                     ('mpg_to_l_per_100', 'MPG to Liter/100km'),
                                      ('mpg_to_km_per_l', 'MPG to Km/Liter')],
                             validators=[DataRequired()])
     value = FloatField(label="Value", validators=[NumberRange(min=1, max=None, message="Please enter a valid value")])

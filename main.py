@@ -19,7 +19,7 @@ from applications.cheap_flights.flights_search import search_flights
 from applications.pdf_converter.data_manager import (delete_files,
                                                      generate_download_link,
                                                      image2pdf, pdf2image)
-from applications.unit_converter.data_manager import km_to_miles,miles_to_km,l_per_100km_to_km_per_l,mpg_to_km_per_100
+from applications.unit_converter.data_manager import km_to_miles,miles_to_km,l_per_100km_to_km_per_l,mpg_to_l_per_100
 
 app = Flask(__name__)
 app.config["JSON_AS_ASCII"] = False
@@ -196,12 +196,12 @@ def unit_converter():
             result = l_per_100km_to_km_per_l(form_unitconverter.value.data)
             flash(set_punctuation(result))
             flash("km/L")
-        elif form_unitconverter.conversion.data == "mpg_to_km_per_100":
-            result = mpg_to_km_per_100(form_unitconverter.value.data)
+        elif form_unitconverter.conversion.data == "mpg_to_l_per_100":
+            result = mpg_to_l_per_100(form_unitconverter.value.data)
             flash(set_punctuation(result))
-            flash("km/100L")
+            flash("L/100km")
         elif form_unitconverter.conversion.data == "mpg_to_km_per_l":
-            result = l_per_100km_to_km_per_l(mpg_to_km_per_100(form_unitconverter.value.data))
+            result = l_per_100km_to_km_per_l(mpg_to_l_per_100(form_unitconverter.value.data))
             flash(set_punctuation(result))
             flash("km/L")
     return render_template("unit_converter.html", form=form_unitconverter)
