@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import (DateField, FileField, IntegerField, PasswordField,
-                     RadioField, SelectField, StringField, SubmitField)
+                     RadioField, SelectField, StringField, SubmitField, FloatField)
 from wtforms.validators import DataRequired, Email, NumberRange, Optional
 
 """ Registration form """
@@ -41,4 +41,15 @@ class Img2Pdf(FlaskForm):
                                      ('image_to_pdf', 'IMAGE to PDF')],
                             validators=[DataRequired()])
     file = FileField(label="", validators=[DataRequired()])
+    submit = SubmitField(label="Convert")
+
+class UnitConverter(FlaskForm):
+    conversion = RadioField(label='',
+                            choices=[('km_to_mile', 'Km to Mile'),
+                                     ('mile_to_km', 'Mile to Mm'),
+                                     ('liter100_to_kmliter', 'Liter/100km to Km/Liter'),
+                                     ('mpg_to_km_per_100', 'MPG to Liter/100'),
+                                     ('mpg_to_km_per_l', 'MPG to Km/Liter')],
+                            validators=[DataRequired()])
+    value = FloatField(label="Value", validators=[NumberRange(min=1, max=None, message="Please enter a valid value")])
     submit = SubmitField(label="Convert")

@@ -10,18 +10,20 @@ from flask_login import (LoginManager, UserMixin, current_user, login_required,
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug import security
 
-from forms import CheapFlights, Img2Pdf, LoginForm, RegisterForm
-from global_functions import upload_file_path
+import forms
+from forms import CheapFlights, Img2Pdf, LoginForm, RegisterForm, UnitConverter
+from global_functions import upload_file_path, set_punctuation
 
 from applications.cheap_flights.flights_search import search_flights
 
 from applications.pdf_converter.data_manager import (delete_files,
                                                      generate_download_link,
                                                      image2pdf, pdf2image)
+from applications.unit_converter.data_manager import km_to_miles,miles_to_km,l_per_100km_to_km_per_l,mpg_to_km_per_100
 
 app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False
-app.config['SECRET_KEY'] = os.environ.get("FLASK_KEY")
+app.config["JSON_AS_ASCII"] = False
+app.config["SECRET_KEY"] = os.environ.get("FLASK_KEY")
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
@@ -139,7 +141,7 @@ def pdf_converter():
                 download_link = generate_download_link(filename)
                 delete_thread = Thread(target=delete_files, args=(filename,))
                 delete_thread.start()
-                return render_template('pdf_converter_result.html', download_urls=download_link)
+                return render_template("pdf_converter_result.html", download_urls=download_link)
             else:
                 flash("Wrong file type, please upload a valid PDF file")
         elif form_pdfconverter.conversion.data == "image_to_pdf":
@@ -148,7 +150,7 @@ def pdf_converter():
                 download_link = generate_download_link(filename)
                 delete_thread = Thread(target=delete_files, args=(filename,))
                 delete_thread.start()
-                return render_template('pdf_converter_result.html', download_urls=download_link)
+                return render_template("pdf_converter_result.html", download_urls=download_link)
             else:
                 flash("Wrong file type, please upload a valid JPG/PNG file")
         else:
@@ -156,10 +158,53 @@ def pdf_converter():
     return render_template("pdf_converter.html", form=form_pdfconverter)
 
 
-@app.route('/download/<folder>/<filename>', methods=['GET'])
+@app.route("/download/<folder>/<filename>", methods=["GET"])
 def download_file(folder, filename):
     converted_path = f"static/download/{folder}/{filename}"
     return send_file(converted_path, as_attachment=True)
+
+
+@app.route("/unit_converter", methods=["GET", "POST"])
+def unit_converter():
+    """
+    Converts the value passed based on the selected unit conversion.
+
+    If the form is validated:
+        - Determines the type of unit conversion selected and performs the conversion accordingly.
+        - The result is formatted using the set_punctuation function before being displayed.
+
+    Returns:
+        str: Rendered HTML template containing the form for unit conversion.
+
+    Note:
+        - Each form submission triggers a unit conversion,
+        however some conversions may reuse calculations to achieve the result.
+        - Flash messages are used to display the result.
+
+    """
+    form_unitconverter = UnitConverter()
+    if form_unitconverter.validate_on_submit():
+        if form_unitconverter.conversion.data == "km_to_mile":
+            result = km_to_miles(form_unitconverter.value.data)
+            flash(set_punctuation(result))
+            flash("miles")
+        elif form_unitconverter.conversion.data == "mile_to_km":
+            result = miles_to_km(form_unitconverter.value.data)
+            flash(set_punctuation(result))
+            flash("km")
+        elif form_unitconverter.conversion.data == "liter100_to_kmliter":
+            result = l_per_100km_to_km_per_l(form_unitconverter.value.data)
+            flash(set_punctuation(result))
+            flash("km/L")
+        elif form_unitconverter.conversion.data == "mpg_to_km_per_100":
+            result = mpg_to_km_per_100(form_unitconverter.value.data)
+            flash(set_punctuation(result))
+            flash("km/100L")
+        elif form_unitconverter.conversion.data == "mpg_to_km_per_l":
+            result = l_per_100km_to_km_per_l(mpg_to_km_per_100(form_unitconverter.value.data))
+            flash(set_punctuation(result))
+            flash("km/L")
+    return render_template("unit_converter.html", form=form_unitconverter)
 
 
 @app.route("/sign-up", methods=["GET", "POST"])

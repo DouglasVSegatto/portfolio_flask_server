@@ -19,7 +19,19 @@
     max-width: 300px;
 }
 
+.unitconverter-form-container {
+    width: 200%;
+    max-width: 250px;
+}
 
+#testing {
+        margin: 0 auto;
+        display: block;
+    }
+
+.flash-unitconverter {
+ font-size: 75px;
+}
 
 /*####################*/
 

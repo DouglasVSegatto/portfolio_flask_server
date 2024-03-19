@@ -1,4 +1,4 @@
-import os
+import os, locale
 
 """
 Created this 'global_functions' as few can be reused many times by other apps.
@@ -40,3 +40,22 @@ def download_file_path(filename):
     :rtype: str
     """
     return os.path.join("static", "download", filename)
+
+
+def set_punctuation(value):
+    """
+    Format args value with punctuation.
+
+    :param value: The numeric value to be formatted with punctuation.
+    :type value: float
+    :return: The formatted value with punctuation proper punctuation.
+    :rtype: str
+
+    Example:
+    set_punctuation(1234567.89)
+    '1,234,567.9'
+    """
+
+    locale.setlocale(locale.LC_ALL, "")
+    value_formatted = locale.format_string("%.1f", value, grouping=True)
+    return value_formatted

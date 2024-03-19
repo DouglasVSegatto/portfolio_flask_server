@@ -33,6 +33,7 @@
           <li><a href="{{ url_for('home') }}" class="nav-link px-2 text-secondary ">Home</a></li>
           <li><a href="{{ url_for('cheap_flight') }}" class="nav-link px-2 text-black">Cheap Flights</a></li>
           <li><a href="{{ url_for('pdf_converter') }}" class="nav-link px-2 text-black">PDF Converter</a></li>
+          <li><a href="{{ url_for('unit_converter') }}" class="nav-link px-2 text-black">Unit Converter</a></li>
         {% if current_user.is_authenticated %}
           <li><a href="{{ url_for('example') }}" class="nav-link px-2 text-black">Example</a></li>
         {% endif %}
