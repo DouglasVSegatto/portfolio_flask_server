@@ -5,6 +5,7 @@ import os
 Created this 'global_functions' as few can be reused many times by other apps.
 """
 
+
 def remove_extension(filename):
     """
     Remove the file extension from the given filename and return the main name.
@@ -56,7 +57,6 @@ def set_punctuation(value):
     set_punctuation(1234567.89)
     '1,234,567.9'
     """
-
     locale.setlocale(locale.LC_ALL, "")
     value_formatted = locale.format_string("%.1f", value, grouping=True)
     return value_formatted

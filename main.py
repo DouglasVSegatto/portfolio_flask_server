@@ -5,20 +5,30 @@ from threading import Thread
 from flask import Flask, flash, redirect, render_template, send_file, url_for
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
-from flask_login import (LoginManager, UserMixin, current_user, login_required,
-                         login_user, logout_user)
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    current_user,
+    login_required,
+    login_user,
+    logout_user,
+)
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug import security
 
-import forms
 from applications.cheap_flights.flights_search import search_flights
-from applications.pdf_converter.data_manager import (delete_files,
-                                                     generate_download_link,
-                                                     image2pdf, pdf2image)
-from applications.unit_converter.data_manager import (km_to_miles,
-                                                      l_per_100km_to_km_per_l,
-                                                      miles_to_km,
-                                                      mpg_to_l_per_100)
+from applications.pdf_converter.data_manager import (
+    delete_files,
+    generate_download_link,
+    image2pdf,
+    pdf2image,
+)
+from applications.unit_converter.data_manager import (
+    km_to_miles,
+    l_per_100km_to_km_per_l,
+    miles_to_km,
+    mpg_to_l_per_100,
+)
 from forms import CheapFlights, Img2Pdf, LoginForm, RegisterForm, UnitConverter
 from global_functions import set_punctuation, upload_file_path
 
@@ -124,9 +134,13 @@ def cheap_flight():
                 return_to=form_cf.return_to.data,
                 nights_in_dst_from=form_cf.nights_in_dst_from.data,
                 nights_in_dst_to=form_cf.nights_in_dst_to.data,
-                adults=form_cf.adults.data
+                adults=form_cf.adults.data,
             )
-            return render_template("cheap_flights_result.html", flights_result=flights_result, status_code=status_code)
+            return render_template(
+                "cheap_flights_result.html",
+                flights_result=flights_result,
+                status_code=status_code,
+            )
     return render_template("cheap_flights.html", form=form_cf)
 
 
@@ -142,7 +156,9 @@ def pdf_converter():
                 download_link = generate_download_link(filename)
                 delete_thread = Thread(target=delete_files, args=(filename,))
                 delete_thread.start()
-                return render_template("pdf_converter_result.html", download_urls=download_link)
+                return render_template(
+                    "pdf_converter_result.html", download_urls=download_link
+                )
             else:
                 flash("Wrong file type, please upload a valid PDF file")
         elif form_pdfconverter.conversion.data == "image_to_pdf":
@@ -151,7 +167,9 @@ def pdf_converter():
                 download_link = generate_download_link(filename)
                 delete_thread = Thread(target=delete_files, args=(filename,))
                 delete_thread.start()
-                return render_template("pdf_converter_result.html", download_urls=download_link)
+                return render_template(
+                    "pdf_converter_result.html", download_urls=download_link
+                )
             else:
                 flash("Wrong file type, please upload a valid JPG/PNG file")
         else:
@@ -202,7 +220,9 @@ def unit_converter():
             flash(set_punctuation(result))
             flash("L/100km")
         elif form_unitconverter.conversion.data == "mpg_to_km_per_l":
-            result = l_per_100km_to_km_per_l(mpg_to_l_per_100(form_unitconverter.value.data))
+            result = l_per_100km_to_km_per_l(
+                mpg_to_l_per_100(form_unitconverter.value.data)
+            )
             flash(set_punctuation(result))
             flash("km/L")
     return render_template("unit_converter.html", form=form_unitconverter)
@@ -229,7 +249,9 @@ def sign_up():
     reg_form = RegisterForm()
     if reg_form.is_submitted():
         user_exist = User.query.filter(
-            (User.email == reg_form.username.data) | (User.username == reg_form.email.data)).first()
+            (User.email == reg_form.username.data)
+            | (User.username == reg_form.email.data)
+        ).first()
         if user_exist:
             if reg_form.username.data == user_exist.username:
                 flash("Username already in use.")
@@ -238,8 +260,10 @@ def sign_up():
         else:
             new_user = User(
                 username=reg_form.username.data.lower(),
-                password=security.generate_password_hash(reg_form.password.data, method="pbkdf2", salt_length=8),
-                email=reg_form.email.data.lower()
+                password=security.generate_password_hash(
+                    reg_form.password.data, method="pbkdf2", salt_length=8
+                ),
+                email=reg_form.email.data.lower(),
             )
             db.session.add(new_user)
             db.session.commit()
@@ -253,11 +277,17 @@ def login():
     login_form = LoginForm()
     if login_form.is_submitted():
         """Find/Filter User data"""
-        user_exist = User.query.filter_by(email=login_form.user_authentication.data).first()
+        user_exist = User.query.filter_by(
+            email=login_form.user_authentication.data
+        ).first()
         if not user_exist:
-            user_exist = User.query.filter_by(username=login_form.user_authentication.data).first()
+            user_exist = User.query.filter_by(
+                username=login_form.user_authentication.data
+            ).first()
         if user_exist:
-            if not security.check_password_hash(user_exist.password, login_form.password.data):
+            if not security.check_password_hash(
+                user_exist.password, login_form.password.data
+            ):
                 flash("Wrong password, try again.")
                 return redirect(url_for("login"))
             else:
