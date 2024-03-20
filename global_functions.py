@@ -1,4 +1,5 @@
-import os, locale
+import locale
+import os
 
 """
 Created this 'global_functions' as few can be reused many times by other apps.

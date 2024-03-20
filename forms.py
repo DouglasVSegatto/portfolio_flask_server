@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import (DateField, FileField, IntegerField, PasswordField,
-                     RadioField, SelectField, StringField, SubmitField, FloatField)
+from wtforms import (DateField, FileField, FloatField, IntegerField,
+                     PasswordField, RadioField, SelectField, StringField,
+                     SubmitField)
 from wtforms.validators import DataRequired, Email, NumberRange, Optional
 
 """ Registration form """

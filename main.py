@@ -11,15 +11,16 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug import security
 
 import forms
-from forms import CheapFlights, Img2Pdf, LoginForm, RegisterForm, UnitConverter
-from global_functions import upload_file_path, set_punctuation
-
 from applications.cheap_flights.flights_search import search_flights
-
 from applications.pdf_converter.data_manager import (delete_files,
                                                      generate_download_link,
                                                      image2pdf, pdf2image)
-from applications.unit_converter.data_manager import km_to_miles,miles_to_km,l_per_100km_to_km_per_l,mpg_to_l_per_100
+from applications.unit_converter.data_manager import (km_to_miles,
+                                                      l_per_100km_to_km_per_l,
+                                                      miles_to_km,
+                                                      mpg_to_l_per_100)
+from forms import CheapFlights, Img2Pdf, LoginForm, RegisterForm, UnitConverter
+from global_functions import set_punctuation, upload_file_path
 
 app = Flask(__name__)
 app.config["JSON_AS_ASCII"] = False
