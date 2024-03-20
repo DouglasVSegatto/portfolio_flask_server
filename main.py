@@ -206,25 +206,25 @@ def unit_converter():
         if form_unitconverter.conversion.data == "km_to_mile":
             result = km_to_miles(form_unitconverter.value.data)
             flash(set_punctuation(result))
-            flash("miles")
+            flash("MILES")
         elif form_unitconverter.conversion.data == "mile_to_km":
             result = miles_to_km(form_unitconverter.value.data)
             flash(set_punctuation(result))
-            flash("km")
+            flash("KM")
         elif form_unitconverter.conversion.data == "liter100_to_kmliter":
             result = l_per_100km_to_km_per_l(form_unitconverter.value.data)
             flash(set_punctuation(result))
-            flash("km/L")
+            flash("KM/L")
         elif form_unitconverter.conversion.data == "mpg_to_l_per_100":
             result = mpg_to_l_per_100(form_unitconverter.value.data)
             flash(set_punctuation(result))
-            flash("L/100km")
+            flash("L/100KM")
         elif form_unitconverter.conversion.data == "mpg_to_km_per_l":
             result = l_per_100km_to_km_per_l(
                 mpg_to_l_per_100(form_unitconverter.value.data)
             )
             flash(set_punctuation(result))
-            flash("km/L")
+            flash("KM/L")
     return render_template("unit_converter.html", form=form_unitconverter)
 
 
