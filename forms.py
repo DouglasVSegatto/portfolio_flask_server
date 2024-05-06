@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import (
     DateField,
-    FileField,
     FloatField,
     IntegerField,
     PasswordField,
@@ -9,8 +8,15 @@ from wtforms import (
     SelectField,
     StringField,
     SubmitField,
+    MultipleFileField,
 )
-from wtforms.validators import DataRequired, Email, NumberRange, Optional
+from wtforms.validators import (
+    DataRequired,
+    Email,
+    NumberRange,
+    Optional,
+    ValidationError,
+)
 
 """ Registration form """
 
@@ -74,14 +80,50 @@ class CheapFlights(FlaskForm):
     submit = SubmitField(label="Search")
 
 
-class Img2Pdf(FlaskForm):
+class PdfConverter(FlaskForm):
     conversion = RadioField(
         label="Choose your conversion",
-        choices=[("pdf_to_image", "PDF to IMAGE"), ("image_to_pdf", "IMAGE to PDF")],
+        choices=[
+            ("pdf_to_image", "PDF to IMAGE"),
+            ("image_to_pdf", "IMAGE to PDF"),
+            ("pdf_merge", "PDF MERGE"),
+        ],
         validators=[DataRequired()],
     )
-    file = FileField(label="", validators=[DataRequired()])
-    submit = SubmitField(label="Convert")
+    file = MultipleFileField(label="", validators=[DataRequired()])
+    submit = SubmitField(label="Upload")
+
+    def validate_file(self, field):
+        # Validate based on the chosen conversion
+        conversion_choice = self.conversion.data
+        if conversion_choice == "pdf_to_image":
+            # Check if all files have .pdf extension
+            for uploaded_file in field.data:
+                if not uploaded_file.filename.lower().endswith(".pdf"):
+                    raise ValidationError(
+                        "Please upload only PDF files for PDF to Image conversion."
+                    )
+        elif conversion_choice == "image_to_pdf":
+            # Check if all files have image extension (e.g., .jpg, .png)
+            allowed_extensions = {".jpg", ".jpeg", ".png", ".gif"}
+            for uploaded_file in field.data:
+                if not any(
+                    uploaded_file.filename.lower().endswith(ext)
+                    for ext in allowed_extensions
+                ):
+                    raise ValidationError(
+                        "Please upload only image files (JPG, PNG, GIF) for Image to PDF conversion."
+                    )
+        elif conversion_choice == "pdf_merge":
+            # Check if all files have .pdf extension
+            if len(field.data) == 1:
+                raise ValidationError("Minimum of two files required for PDF Merge.")
+            else:
+                for uploaded_file in field.data:
+                    if not uploaded_file.filename.lower().endswith(".pdf"):
+                        raise ValidationError(
+                            "Please upload only PDF files for PDF Merge."
+                        )
 
 
 class UnitConverter(FlaskForm):

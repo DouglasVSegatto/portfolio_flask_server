@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 from threading import Thread
-
 from flask import Flask, flash, redirect, render_template, send_file, url_for
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
@@ -18,10 +17,10 @@ from werkzeug import security
 
 from applications.cheap_flights.flights_search import search_flights
 from applications.pdf_converter.data_manager import (
-    delete_files,
     generate_download_link,
-    image2pdf,
-    pdf2image,
+    convert_pdf2image,
+    convert_image2pdf,
+    pdf_merge,
 )
 from applications.unit_converter.data_manager import (
     km_to_miles,
@@ -29,8 +28,14 @@ from applications.unit_converter.data_manager import (
     miles_to_km,
     mpg_to_l_per_100,
 )
-from forms import CheapFlights, Img2Pdf, LoginForm, RegisterForm, UnitConverter
-from global_functions import set_punctuation, upload_file_path
+from forms import CheapFlights, PdfConverter, LoginForm, RegisterForm, UnitConverter
+from global_functions import (
+    set_punctuation,
+    upload_file_path,
+    download_file_path,
+    delete_folders,
+    generate_unique_id,
+)
 
 app = Flask(__name__)
 app.config["JSON_AS_ASCII"] = False
@@ -146,34 +151,46 @@ def cheap_flight():
 
 @app.route("/pdf_converter", methods=["GET", "POST"])
 def pdf_converter():
-    form_pdfconverter = Img2Pdf()
-    if form_pdfconverter.is_submitted():
-        filename = form_pdfconverter.file.data.filename
-        form_pdfconverter.file.data.save(upload_file_path(filename))
+    """
+    Converts files between PDF and image formats using pdf2image and img2pdf libraries.
+    PDF Merge is using pypdf libraries
+
+    Generates a unique ID, creates necessary folders for file storage and performs the conversion based on the
+    selected option in the form.
+
+    :return: Rendered template for displaying conversion result or input form.
+    :rtype: str
+    :raises: raises are captured in class PdfConverter
+        In case a conversion error occurred, user will be informed to try again later.
+    """
+    conversion_success = None
+    form_pdfconverter = PdfConverter()
+    if form_pdfconverter.validate_on_submit():
+        # Generate Unique ID
+        folder_id = str(generate_unique_id())
+        # Create folders
+        os.makedirs(upload_file_path(folder_name=folder_id))
+        os.makedirs(download_file_path(folder_name=folder_id))
+
+        for file in form_pdfconverter.file.data:
+            file.save(upload_file_path(folder_name=folder_id, file_name=file.filename))
         if form_pdfconverter.conversion.data == "pdf_to_image":
-            validate = pdf2image(filename)
-            if validate:
-                download_link = generate_download_link(filename)
-                delete_thread = Thread(target=delete_files, args=(filename,))
-                delete_thread.start()
-                return render_template(
-                    "pdf_converter_result.html", download_urls=download_link
-                )
-            else:
-                flash("Wrong file type, please upload a valid PDF file")
+            conversion_success = convert_pdf2image(folder_name=folder_id)
         elif form_pdfconverter.conversion.data == "image_to_pdf":
-            validate = image2pdf(filename)
-            if validate:
-                download_link = generate_download_link(filename)
-                delete_thread = Thread(target=delete_files, args=(filename,))
-                delete_thread.start()
-                return render_template(
-                    "pdf_converter_result.html", download_urls=download_link
-                )
-            else:
-                flash("Wrong file type, please upload a valid JPG/PNG file")
+            conversion_success = convert_image2pdf(folder_name=folder_id)
+        elif form_pdfconverter.conversion.data == "pdf_merge":
+            conversion_success = pdf_merge(folder_name=folder_id)
+
+        delete_thread = Thread(target=delete_folders, args=(folder_id,))
+        delete_thread.start()
+
+        if conversion_success:
+            download_link = generate_download_link(folder_name=folder_id)
+            return render_template(
+                "pdf_converter_result.html", download_urls=download_link
+            )
         else:
-            flash("An error occur, please try again in a few minutes")
+            flash("An error occurred, please try again in a few minutes", "error")
     return render_template("pdf_converter.html", form=form_pdfconverter)
 
 
